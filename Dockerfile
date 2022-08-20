@@ -1,8 +1,3 @@
-FROM openjdk:8-jdk-alpine
-ARG JAR_FILE=build/libs/*.war
-COPY ${JAR_FILE} mvn-hello-world.war
-
-RUN mkdir destination-dir-for-add
-ADD sample.tar.gz /destination-dir-for-add
-
-ENTRYPOINT ["java","-jar","/mvn-hello-world.war"]
+FROM openjdk:8
+COPY target/mvn-hello-world.war /usr/src/mvn-hello-world.war
+CMD java -war /usr/src/mvn-hello-world.war
