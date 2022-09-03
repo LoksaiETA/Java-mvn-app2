@@ -1,57 +1,32 @@
 pipeline {
-    agent any
+    agent { label 'slave1' }
 
-	environment {	
-		DOCKERHUB_CREDENTIALS=credentials('dockerloginid')
-	} 
- 
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
         maven "MAVEN"
     }
     
     stages {
-        stage('Build') {
+        stage('SCM Checkout') {
             steps {
                 // Get some code from a GitHub repository
-                //git branch: 'master', credentialsId: 'GIT_HUB_CREDENTIALS', url: //'https://github.com/LoksaiETA/Java-mvn-app2.git'
-				git 'https://github.com/LoksaiETA/Java-mvn-app2.git'
-                // Run Maven on a Unix agent.
-                //sh './gradle wrapper'
-                //sh './gradlew build'
-                sh "mvn -Dmaven.test.failure.ignore=true clean package"
-
-                // To run Maven on a Windows agent, use
-                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+                git 'https://github.com/LoksaiETA/Java-mvn-app2.git'
+				//git clone git 'https://loksaieta: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@github.com/LoksaiETA/Java-mvn-app2.git'
+				//git git@github.com:LoksaiETA/Java-mvn-app2.git
             }
 		}
-
-        stage("Docker build"){
+        stage('Maven Build') {
             steps {
-				sh 'docker version'
-				sh 'docker build -t loksai-docker-demo .'
-				sh 'docker image list'
-				sh 'docker tag loksai-docker-demo loksaieta/loksai-docker-demo:loksai-docker-demo'
+                // Run Maven on a Unix agent.
+                sh "mvn -Dmaven.test.failure.ignore=true clean package"
             }
-        }
-		stage('Login') {
-
-			steps {
-				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-			}
 		}
-
-		stage('Push') {
-
-			steps {
-				sh 'docker push loksaieta/loksai-docker-demo:loksai-docker-demo'
-			}
-		}
-
-		stage("Deploy to K8s") {
-			steps {
-				sh "kubectl apply -f k8s-spring-boot-deployment.yml --kubeconfig="
-			}
+        stage('Deploy to QA AppServer') {
+            steps {
+				script {
+                    sshPublisher(publishers: [sshPublisherDesc(configName: 'QAServer', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: 'target/', sourceFiles: 'target/mvn-hello-world.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+				}
+            }
 		}
 	}
 }
