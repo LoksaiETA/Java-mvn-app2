@@ -2,7 +2,6 @@
  - hosts: buildservers
    tasks:
      - name: Fetch the file from the javabuildserver to master
-       run_once: yes
        fetch: src=/home/devopsadmin/jenkins/workspace/Java-Mvn-Build-Docker-Pipeline/target/mvn-hello-world.war dest=buffer/ flat=yes
        when: "{{ inventory_hostname == 'javabuildserver' }}"
 
