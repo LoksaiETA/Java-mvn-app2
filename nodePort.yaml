@@ -1,0 +1,16 @@
+#Service Type nodePort
+apiVersion: v1
+kind: Service
+metadata:
+  name: loksai-np-service
+  labels:
+    app: loksai-mvn-app
+spec:
+  selector:
+    app: loksai-mvn-app
+
+  type: NodePort
+  ports:
+  - nodePort: 31000
+    port: 8080
+    targetPort: 8080
