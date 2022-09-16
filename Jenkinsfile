@@ -21,6 +21,16 @@ pipeline {
                 sh "mvn -Dmaven.test.failure.ignore=true clean package"
             }
 		}
+        stage('Approval Step'){
+            steps{
+                
+                //----------------send an approval prompt-------------
+                script {
+                   env.APPROVED_DEPLOY = input message: 'User input required Choose "yes" | "Abort"'
+                       }
+                //-----------------end approval prompt------------
+            }
+        }
         stage('Deploy to QA AppServer') {
             steps {
 				script {
