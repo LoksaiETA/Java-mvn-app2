@@ -1,0 +1,58 @@
+pipeline {
+    
+    agent {
+        label 'build_node'
+    }
+
+	environment {	
+		DOCKERHUB_CREDENTIALS=credentials('dockerloginid')
+	} 
+ 
+    tools 
+    {
+        maven 'Maven-3.8.6'
+    }
+    
+    stages {
+        stage('SCM Checkout') {
+            steps {
+				git 'https://github.com/LoksaiETA/Java-mvn-app2.git'
+            }
+		}
+		
+        stage('Maven Build') {
+            steps {
+                // Run Maven on a Unix agent.
+                sh "mvn -Dmaven.test.failure.ignore=true clean package"
+            }
+		}
+
+        stage("Docker build"){
+            steps {
+				sh 'docker version'
+				sh 'docker build -t loksaidevops .'
+				sh 'docker image list'
+				sh 'docker tag loksaidevops loksaieta/loksaidevops:v1.0'
+            }
+        }
+		stage('Login2DockerHub') {
+
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
+
+		stage('Push2DockerHub') {
+
+			steps {
+				sh 'docker push loksaieta/loksaidevops:v1.0'
+			}
+		}
+
+		stage("Deploy to K8s Cluster") {
+            steps {
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'kubernetes-master', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'kubectl apply -f k8s-mvn-deployment.yaml', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*.yaml')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+    		}
+        }
+	}
+}
