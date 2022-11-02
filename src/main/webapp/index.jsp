@@ -10,7 +10,7 @@
       <img src="https://octodex.github.com/images/spidertocat.png" alt="Spidertocat"
            class="img-responsive center-block" style="width:250px"/>
       <h2 class="text-center">Hello Everyone</h2>
-      <p class="text-center">Get ready for a DevOps ride! New Change! DCP-Batch-SEP.2022 newgdfgdfg change-1</p>
+      <p class="text-center">Get ready for a DevOps ride! New Change! DCP-Batch-OCT.2022 newgdfgdfg change-1</p>
   </div>
 </body>
 </html>
