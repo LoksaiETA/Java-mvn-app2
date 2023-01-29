@@ -10,7 +10,7 @@
       <img src="https://octodex.github.com/images/spidertocat.png" alt="Spidertocat"
            class="img-responsive center-block" style="width:250px"/>
       <h2 class="text-center">Hello Everyone</h2>
-      <p class="text-center">Edureka Jenkins Batch! PollSCM CI CD ...</p>
+      <p class="text-center">Edureka Jenkins Batch! GITHUB-WEBHOOK CI CD ...</p>
   </div>
 </body>
 </html>
