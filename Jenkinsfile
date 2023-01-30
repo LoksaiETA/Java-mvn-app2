@@ -1,76 +1,58 @@
 pipeline {
-    agent { label 'javabuildserver' }
-	
-
-    tools {
-        // Install the Maven version configured as "M3" and add it to the path.
-	jdk "aws_open_jdk"
-        maven "slave_maven"
+    
+    agent {
+        label 'Slave1'
     }
 
-	environment {	
-		DOCKERHUB_CREDENTIALS=credentials('dockerloginid')
-	} 
+    tools 
+    {
+        maven 'Maven-3.8.7'
+    }
     
     stages {
-        stage('SCM Checkout') {
+        stage('SCM-Checkout') {
             steps {
                 // Get some code from a GitHub repository
                 git 'https://github.com/LoksaiETA/Java-mvn-app2.git'
+
             }
-		}
-        stage('Maven Build') {
+              post {
+                failure {
+                  sh "echo 'Send mail on failure'"
+                  mail to:"dummyid@gmail.com", from: 'dummyid@gmail.com', subject:"FAILURE: ${currentBuild.fullDisplayName}", body: "we failed."
+                }
+              }
+			}
+        stage('Build') {
             steps {
                 // Run Maven on a Unix agent.
                 sh "mvn -Dmaven.test.failure.ignore=true clean package"
             }
-		}
-        stage("Docker build"){
-            steps {
-				sh 'docker version'
-				sh 'docker build -t loksaimvndevops .'
-				sh 'docker image list'
-				sh 'docker tag loksaimvndevops loksaieta/loksaimvndevops:latest'
-            }
-        }
-		stage('Login2DockerHub') {
-
-			steps {
-				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+              post {
+                failure {
+                  sh "echo 'Send mail on failure'"
+                  mail to:"dummyid@gmail.com", from: 'dummyid@gmail.com', subject:"FAILURE: ${currentBuild.fullDisplayName}", body: "Build failed."
+                }
+              }
 			}
-		}
-        stage('Approve - push Image to dockerhub'){
-            steps{
-                
-                //----------------send an approval prompt-------------
-                script {
-                   env.APPROVED_DEPLOY = input message: 'User input required Choose "yes" | "Abort"'
-                       }
-                //-----------------end approval prompt------------
-            }
-        }
-		stage('Push2DockerHub') {
 
-			steps {
-				sh 'docker push loksaieta/loksaimvndevops:latest'
-			}
-		}
-        stage('Approve - Deployment to Kubernetes Cluster'){
-            steps{
-                
-                //----------------send an approval prompt-----------
-                script {
-                   env.APPROVED_DEPLOY = input message: 'User input required Choose "yes" | "Abort"'
-                       }
-                //-----------------end approval prompt------------
-            }
-        }
-        stage('Deploy to Kubernetes Cluster') {
+        stage('Deploy to QA AppServer') {
             steps {
-		script {
-		sshPublisher(publishers: [sshPublisherDesc(configName: 'kubernetescluster', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'kubectl apply -f k8smvndeployment.yaml', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*.yaml')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-		}
+				script {
+					sshPublisher(publishers: [sshPublisherDesc(configName: 'QA-Server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: 'target/', sourceFiles: 'target/mvn-hello-world.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+				}
             }
-	}
-}
+              post {
+                success {
+                  sh "echo 'Send mail on success'"
+                  //mail bcc: '', body: 'success', cc: '', from: '', replyTo: '', subject: 'success', to: 'dummyid@gmail.com'
+                  mail to:"dummyid@gmail.com", from: 'dummyid@gmail.com', subject:"SUCCESS: ${currentBuild.fullDisplayName}", body: "we passed."
+                }
+                failure {
+                  sh "echo 'Send mail on failure'"
+                  mail to:"dummyid@gmail.com", from: 'dummyid@gmail.com', subject:"FAILURE: ${currentBuild.fullDisplayName}", body: "we failed."
+                }
+              }	
+		}
+    }
 }
