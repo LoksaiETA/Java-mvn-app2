@@ -1,58 +1,22 @@
 pipeline {
-    
-    agent {
-        label 'Slave1'
-    }
+    agent any
 
-    tools 
-    {
-        maven 'Maven-3.8.7'
-    }
-    
     stages {
-        stage('SCM-Checkout') {
+        stage('SCM-CHECKOUT') {
             steps {
-                // Get some code from a GitHub repository
-                git 'https://github.com/LoksaiETA/Java-mvn-app2.git'
-
+                echo 'Hello World'
+				echo 'Hello World'
             }
-              post {
-                failure {
-                  sh "echo 'Send mail on failure'"
-                  mail to:"dummyid@gmail.com", from: 'dummyid@gmail.com', subject:"FAILURE: ${currentBuild.fullDisplayName}", body: "we failed."
-                }
-              }
-			}
-        stage('Build') {
+        }
+        stage('BUILD') {
             steps {
-                // Run Maven on a Unix agent.
-                sh "mvn -Dmaven.test.failure.ignore=true clean package"
+                echo 'Hello World'
             }
-              post {
-                failure {
-                  sh "echo 'Send mail on failure'"
-                  mail to:"dummyid@gmail.com", from: 'dummyid@gmail.com', subject:"FAILURE: ${currentBuild.fullDisplayName}", body: "Build failed."
-                }
-              }
-			}
-
-        stage('Deploy to QA AppServer') {
+        }
+        stage('DEPLOY TO QA SERVER') {
             steps {
-				script {
-					sshPublisher(publishers: [sshPublisherDesc(configName: 'QA-Server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: 'target/', sourceFiles: 'target/mvn-hello-world.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-				}
+                echo 'Hello World'
             }
-              post {
-                success {
-                  sh "echo 'Send mail on success'"
-                  //mail bcc: '', body: 'success', cc: '', from: '', replyTo: '', subject: 'success', to: 'dummyid@gmail.com'
-                  mail to:"dummyid@gmail.com", from: 'dummyid@gmail.com', subject:"SUCCESS: ${currentBuild.fullDisplayName}", body: "we passed."
-                }
-                failure {
-                  sh "echo 'Send mail on failure'"
-                  mail to:"dummyid@gmail.com", from: 'dummyid@gmail.com', subject:"FAILURE: ${currentBuild.fullDisplayName}", body: "we failed."
-                }
-              }	
-		}
+        }		
     }
 }
