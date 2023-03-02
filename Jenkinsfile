@@ -16,7 +16,7 @@ pipeline {
         stage('SCM Checkout') {
             steps {
                 // Get some code from a GitHub repository
-                git 'https://github.com/LoksaiETA/devops-java-webapp.git'
+                git 'https://github.com/LoksaiETA/Java-mvn-app2.git'
             }
 		}
         stage('Maven Build') {
