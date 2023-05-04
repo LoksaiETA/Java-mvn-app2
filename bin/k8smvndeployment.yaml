@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loksai-deploy
+  labels:
+    app: loksai-mvn-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: loksai-mvn-app
+  template:
+    metadata:
+      labels:
+        app: loksai-mvn-app
+    spec:
+      containers:
+      - name: loksai-mvn-container
+        image: loksaieta/loksaidevops:v1.0
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loksai-np-service
+  labels:
+    app: loksai-mvn-app
+spec:
+  selector:
+    app: loksai-mvn-app
+
+  type: NodePort
+  ports:
+  - nodePort: 31000
+    port: 8080
+    targetPort: 8080
