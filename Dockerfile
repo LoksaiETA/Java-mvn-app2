@@ -1,4 +1,4 @@
 FROM tomcat:latest
-RUN cp /home/dockeradmin/*.war /usr/local/tomcat/webapps
+wrokdir /home/devopsadmin
 COPY ./mvn-hello-world.war /usr/local/tomcat/webapps/
 
