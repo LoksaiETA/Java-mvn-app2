@@ -1,0 +1,194 @@
+###############
+
+DevOps -->  Tools & Services 
+	
+		1. Projects :
+		
+		Trained DevOps Resource.
+		
+		How much you are strong in ur fundamentals?
+		How much you can able adapt yourself to their requirements?
+		How much you can relate the the things with the real time scenarios?
+		
+		Intro. to DevOps:
+		Tools :::
+			GIT/Jenkins/Ansible/Terraform/Docker/Kubernetes/Promethus/Grafana
+			
+			
+		Resume/Profile :::::
+		
+			Projects:::
+			My learning : 
+			
+			Resume no. of pages... 
+			
+		Project :::
+		
+		Project 1:
+		
+		Name :
+		Tools :
+		How many members : 2 
+		Project Description :
+		Project Duration :
+		
+		Project 2:
+		
+		Name :
+		Tools :
+		How many members : 1
+		
+			Project Description
+			
+			
+		Project :::: ????
+		
+		Banking Application :::
+		
+			Infra
+			Development
+			DevOps pipeline -> automate the CI/CD 
+			
+		DevOps pipeline ::::
+
+		
+		Automated pipeline to perform infra-structure provision and configuration ?
+		
+			Writing the script???
+				IAC - Terraform --> HCL 
+				IAC - Ansible   --> YAML 
+		
+		Automated pipeline to perform build and deployment ?		
+		
+		Automated pipeline to perform build and deployment of containerized application ?		
+		
+		Pipeline 1: Test Server 
+		
+		Pipeline 2 : Build & Deployment
+		
+		
+		
+		
+		Medicure / Insurance Application ::::
+		
+			Projects ==> Have a copy of project Document in github repo.
+							- Project Description
+							- Snapshot of the cicd pipeline work flow 
+							- Pipeline line scripts --> 
+									--> Naming conventions!
+									--> Comments should be maintained
+									--> Input and Output for each stage.
+							- Snapshot of the Project output.
+							
+							
+						What is your contribution in the project ???
+							Infra Provisioning
+							DevOps Pipeline 
+								Created end-to-end pipeline 
+								Create end-to-end pipeline for containerized workload.
+										Jenkins --> 
+										Build '
+										Docker - to build Image
+										Kubernetes - Orchestrate the containers
+			
+pipeline {
+    agent { label 'slave1' }
+	
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "maven-3.6.3"
+    }
+
+	environment {	
+		DOCKERHUB_CREDENTIALS=credentials('dockerloginid')
+	}
+
+    stages {
+        stage('SCM Checkout') {
+            steps {
+                // Get some code from a GitHub repository
+                git 'https://github.com/LoksaiETA/devops-java-webapp.git'
+                //git 'https://github.com/LoksaiETA/Java-mvn-app2.git'
+            }
+		}
+        stage('Maven Build') {
+            steps {
+                // Run Maven on a Unix agent.
+                sh "mvn -Dmaven.test.failure.ignore=true clean package"
+            }
+		}
+        stage("Docker build"){
+            steps {
+				sh 'docker version'
+				sh "docker build -t loksaieta/loksai-eta-app:${BUILD_NUMBER} ."
+				sh 'docker image list'
+				sh "docker tag loksaieta/loksai-eta-app:${BUILD_NUMBER} loksaieta/loksai-eta-app:latest"
+            }
+        }
+        stage('Approve - push Image to dockerhub'){
+            steps{
+                
+                //----------------send an approval prompt-------------
+                script {
+                   env.APPROVED_DEPLOY = input message: 'User input required Choose "yes" | "Abort"'
+                       }
+                //-----------------end approval prompt------------
+            }
+        }
+		stage('Login2DockerHub') {
+
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
+		stage('Push2DockerHub') {
+			steps {
+				sh "docker push loksaieta/loksai-eta-app:latest"
+			}
+		}
+        stage('Deploy to Kubernetes Cluster') {
+            steps {
+		script {
+			sshPublisher(publishers: [sshPublisherDesc(configName: 'FKubemaster1', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'kubectl apply -f k8smvndeployment.yaml', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*.yaml')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+			}
+            }
+	    }
+    }
+}								
+								
+
+
++
++
++
++
+
+
+entrypoint "/bin/bash"
+cmd "/bin/bash"
+
+git docker maven 
+
+FROM centos 
+RUN yum install git -y
+ENTRYPOINT "sleep"
+CMD "30"
+
+
+docker run -it myimge1 50	
+
+
+docker run -it myimge1						
+							
+							
+		
+		
+		
+		
+		
+		
+		
+			
+		
+		
+		
