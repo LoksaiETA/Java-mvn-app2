@@ -10,7 +10,7 @@
       <img src="https://octodex.github.com/images/spidertocat.png" alt="Spidertocat"
            class="img-responsive center-block" style="width:250px"/>
       <h2 class="text-center">Hello Everyone</h2>
-      <p class="text-center"> My Web App - Java Maven SA Nov 25 Demo 10th Dec. ........</p>
+      <p class="text-center"> My Web App - Java Maven SA Nov 25 Demo 10th Dec..</p>
   </div>
 </body>
 </html>
