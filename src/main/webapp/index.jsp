@@ -9,8 +9,8 @@
   <div class="jumbotron" style="background-color:white">
       <img src="https://octodex.github.com/images/spidertocat.png" alt="Spidertocat"
            class="img-responsive center-block" style="width:250px"/>
-      <h2 class="text-center">Hello Sayyed Usman Sayyed Sharif</h2>
-      <p class="text-center"> My Web App pollSCM..</p>
+      <h2 class="text-center">Hello Everyone</h2>
+      <p class="text-center"> My Web App GitHub Webhook.</p>
   </div>
 </body>
 </html>
