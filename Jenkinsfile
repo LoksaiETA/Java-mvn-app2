@@ -1,31 +1,27 @@
 pipeline {
-    agent { label 'sa-javaslave' }
-
-    tools {
-        // Install the Maven version configured as "M3" and add it to the path.
-        maven "slave_maven"
-    }
+    agent { label 'slave1' }
 
     stages {
         stage('SCM Checkout') {
             steps {
-                echo 'Checkout Src from github repo'
-		git 'https://github.com/LoksaiETA/Java-mvn-app2.git'
+                echo 'Perfomr SCM Check-Out'
+				echo 'Cloning Java Maven App Code'
+				git 'https://github.com/LoksaiETA/Java-mvn-app2.git'
             }
         }
-        stage('Maven Build') {
+        stage('Java Application Build') {
             steps {
-                echo 'Perform Maven Build'
-                // Run Maven on a Unix agent.
-                sh "mvn -Dmaven.test.failure.ignore=true clean package"
+                echo 'Perform Java Maven Application Build'
+                sh 'mvn clean package'
             }
         }
-        stage('Deploy to QA Server') {
+        stage('Deploy to Tomcat_Server') {
             steps {
-		script {
-		sshPublisher(publishers: [sshPublisherDesc(configName: 'QA_Server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: 'target/', sourceFiles: 'target/mvn-hello-world.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-		}
+ 				script {
+ 				    sshPublisher(publishers: [sshPublisherDesc(configName: 'SA-Tomcat_Server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: 'target/', sourceFiles: 'target/mvn-hello-world.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+ 				}
+                
+            }
         }
-	}
     }
 }
